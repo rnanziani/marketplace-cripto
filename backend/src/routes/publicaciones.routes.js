@@ -1,37 +1,33 @@
 import express from 'express'
+import {
+  listarPublicaciones,
+  getPublicacion,
+  crearPublicacion,
+  updatePublicacion,
+  deletePublicacion,
+  misPublicaciones
+} from '../controllers/publicaciones.controller.js'
+import { verifyToken } from '../middlewares/auth.middleware.js'
+import { validatePublicacion } from '../middlewares/validation.middleware.js'
+
 const router = express.Router()
 
-// TODO: Implementar middleware de autenticación
-// TODO: Implementar controladores
+// GET /api/publicaciones - Listar publicaciones (público, no requiere auth)
+router.get('/', listarPublicaciones)
 
-// GET /api/publicaciones
-router.get('/', (req, res) => {
-  res.json({ message: 'Endpoint de listar publicaciones - Por implementar' })
-})
+// GET /api/publicaciones/mis-publicaciones - Mis publicaciones (requiere auth)
+router.get('/mis-publicaciones', verifyToken, misPublicaciones)
 
-// GET /api/publicaciones/:id
-router.get('/:id', (req, res) => {
-  res.json({ message: 'Endpoint de detalle de publicación - Por implementar' })
-})
+// GET /api/publicaciones/:id - Obtener detalle de publicación (público)
+router.get('/:id', getPublicacion)
 
-// POST /api/publicaciones
-router.post('/', (req, res) => {
-  res.json({ message: 'Endpoint de crear publicación - Por implementar' })
-})
+// POST /api/publicaciones - Crear publicación (requiere auth)
+router.post('/', verifyToken, validatePublicacion, crearPublicacion)
 
-// PUT /api/publicaciones/:id
-router.put('/:id', (req, res) => {
-  res.json({ message: 'Endpoint de actualizar publicación - Por implementar' })
-})
+// PUT /api/publicaciones/:id - Actualizar publicación (requiere auth)
+router.put('/:id', verifyToken, updatePublicacion)
 
-// DELETE /api/publicaciones/:id
-router.delete('/:id', (req, res) => {
-  res.json({ message: 'Endpoint de eliminar publicación - Por implementar' })
-})
-
-// GET /api/publicaciones/mis-publicaciones
-router.get('/mis-publicaciones', (req, res) => {
-  res.json({ message: 'Endpoint de mis publicaciones - Por implementar' })
-})
+// DELETE /api/publicaciones/:id - Eliminar publicación (requiere auth)
+router.delete('/:id', verifyToken, deletePublicacion)
 
 export default router

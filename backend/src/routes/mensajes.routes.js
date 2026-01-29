@@ -1,22 +1,24 @@
 import express from 'express'
+import {
+  enviarMensaje,
+  listarMensajes,
+  marcarComoLeido
+} from '../controllers/mensajes.controller.js'
+import { verifyToken } from '../middlewares/auth.middleware.js'
+import { validateMensaje } from '../middlewares/validation.middleware.js'
+
 const router = express.Router()
 
-// TODO: Implementar middleware de autenticación
-// TODO: Implementar controladores
+// Todas las rutas requieren autenticación
+router.use(verifyToken)
 
-// POST /api/mensajes
-router.post('/', (req, res) => {
-  res.json({ message: 'Endpoint de enviar mensaje - Por implementar' })
-})
+// POST /api/mensajes - Enviar mensaje
+router.post('/', validateMensaje, enviarMensaje)
 
-// GET /api/mensajes
-router.get('/', (req, res) => {
-  res.json({ message: 'Endpoint de listar mensajes - Por implementar' })
-})
+// GET /api/mensajes - Listar mensajes del usuario
+router.get('/', listarMensajes)
 
-// PUT /api/mensajes/:id/leido
-router.put('/:id/leido', (req, res) => {
-  res.json({ message: 'Endpoint de marcar como leído - Por implementar' })
-})
+// PUT /api/mensajes/:id/leido - Marcar mensaje como leído
+router.put('/:id/leido', marcarComoLeido)
 
 export default router

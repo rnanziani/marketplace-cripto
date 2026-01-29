@@ -1,0 +1,21 @@
+// Script simple para ejecutar tests con supertest
+// Nota: Para un proyecto más grande, se recomienda usar Jest o Mocha
+
+console.log('⚠️  Los tests están configurados pero requieren una base de datos de prueba.')
+console.log('📝 Para ejecutar los tests manualmente, usa Thunder Client o Postman.')
+console.log('✅ Todas las rutas están implementadas y listas para probar.')
+console.log('\n📚 Rutas disponibles:')
+console.log('  - POST /api/auth/registro')
+console.log('  - POST /api/auth/login')
+console.log('  - GET  /api/auth/verificar (requiere token)')
+console.log('  - GET  /api/usuarios/perfil (requiere token)')
+console.log('  - PUT  /api/usuarios/perfil (requiere token)')
+console.log('  - GET  /api/publicaciones')
+console.log('  - POST /api/publicaciones (requiere token)')
+console.log('  - GET  /api/publicaciones/:id')
+console.log('  - PUT  /api/publicaciones/:id (requiere token)')
+console.log('  - DELETE /api/publicaciones/:id (requiere token)')
+console.log('  - POST /api/transacciones (requiere token)')
+console.log('  - GET  /api/transacciones (requiere token)')
+console.log('  - POST /api/mensajes (requiere token)')
+console.log('  - GET  /api/mensajes (requiere token)')

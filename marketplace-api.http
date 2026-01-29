@@ -1,0 +1,120 @@
+### 1. Verificar servidor
+GET http://localhost:3000/api
+
+###
+
+### 2. Registrar usuario
+POST http://localhost:3000/api/auth/registro
+Content-Type: application/json
+
+{"email_00":"salvador@prueba6.com","username_00":"salvicripto6","password_hash_00":"26802020","telefono_00":"123456789","pais_00":"Chile"}
+
+###
+
+### 3. Login y guardar token
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{"email_00":"salvador@prueba6.com","password_hash_00":"26802020"}
+
+
+###
+
+### 4. Verificar token
+GET http://localhost:3000/api/auth/verificar
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjcsImVtYWlsIjoic2FsdmFkb3JAcHJ1ZWJhNi5jb20iLCJpYXQiOjE3Njk2NTE2MjEsImV4cCI6MTc3MDI1NjQyMX0.-vUtSahxMjWQlw9Xkp-4wnmcAKyoDhphxbQQgdoNk7g
+
+###
+
+### 5. Obtener perfil
+GET http://localhost:3000/api/usuarios/perfil
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjcsImVtYWlsIjoic2FsdmFkb3JAcHJ1ZWJhNi5jb20iLCJpYXQiOjE3Njk2NTE2MjEsImV4cCI6MTc3MDI1NjQyMX0.-vUtSahxMjWQlw9Xkp-4wnmcAKyoDhphxbQQgdoNk7g
+
+###
+
+### 6. Actualizar perfil
+PUT http://localhost:3000/api/usuarios/perfil
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjcsImVtYWlsIjoic2FsdmFkb3JAcHJ1ZWJhNi5jb20iLCJpYXQiOjE3Njk2NTE2MjEsImV4cCI6MTc3MDI1NjQyMX0.-vUtSahxMjWQlw9Xkp-4wnmcAKyoDhphxbQQgdoNk7g
+Content-Type: application/json
+
+{"telefono_00":"987654321","pais_00":"Argentina"}
+
+###
+
+### 7. Listar publicaciones
+GET http://localhost:3000/api/publicaciones
+
+###
+
+### 8. Crear publicación
+# @name createPost
+POST http://localhost:3000/api/publicaciones
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjcsImVtYWlsIjoic2FsdmFkb3JAcHJ1ZWJhNi5jb20iLCJpYXQiOjE3Njk2NTE2MjEsImV4cCI6MTc3MDI1NjQyMX0.-vUtSahxMjWQlw9Xkp-4wnmcAKyoDhphxbQQgdoNk7g
+Content-Type: application/json
+
+{
+  "tipo_02": "VENTA",
+  "criptomoneda_02": "BTC",
+  "cantidad_02": 0.5,
+  "precio_unitario_02": 50000,
+  "moneda_fiat_02": "USD",
+  "metodos_pago_02": ["Transferencia bancaria"],
+  "descripcion_02": "Venta de Bitcoin",
+  "ubicacion_02": "Santiago"
+}
+
+###
+
+###
+
+### 9. Detalle de publicación
+GET http://localhost:3000/api/publicaciones/1
+
+###
+
+### 10. Actualizar publicación
+PUT http://localhost:3000/api/publicaciones/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjcsImVtYWlsIjoic2FsdmFkb3JAcHJ1ZWJhNi5jb20iLCJpYXQiOjE3Njk2NTE2MjEsImV4cCI6MTc3MDI1NjQyMX0.-vUtSahxMjWQlw9Xkp-4wnmcAKyoDhphxbQQgdoNk7g
+Content-Type: application/json
+
+{"precio_unitario_02":51000,"descripcion_02":"Precio actualizado"}
+
+###
+
+### 11. Eliminar publicación
+DELETE http://localhost:3000/api/publicaciones/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjcsImVtYWlsIjoic2FsdmFkb3JAcHJ1ZWJhNi5jb20iLCJpYXQiOjE3Njk2NTE2MjEsImV4cCI6MTc3MDI1NjQyMX0.-vUtSahxMjWQlw9Xkp-4wnmcAKyoDhphxbQQgdoNk7g
+
+###
+
+### 12. Registrar comprador
+POST http://localhost:3000/api/auth/registro
+Content-Type: application/json
+
+{"email_00":"comprador@test.com","username_00":"comprador123","password_hash_00":"password123","telefono_00":"987654322","pais_00":"Argentina"}
+
+###
+
+### 13. Login comprador
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{"email_00":"comprador@test.com","password_hash_00":"password123"}
+
+###
+
+### 14. Crear transacción
+POST http://localhost:3000/api/transacciones
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjcsImVtYWlsIjoic2FsdmFkb3JAcHJ1ZWJhNi5jb20iLCJpYXQiOjE3Njk2NTE2MjEsImV4cCI6MTc3MDI1NjQyMX0.-vUtSahxMjWQlw9Xkp-4wnmcAKyoDhphxbQQgdoNk7g
+Content-Type: application/json
+
+{"publicacion_id_04":1,"cantidad_04":0.25}
+
+###
+
+### 15. Enviar mensaje
+POST http://localhost:3000/api/mensajes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjcsImVtYWlsIjoic2FsdmFkb3JAcHJ1ZWJhNi5jb20iLCJpYXQiOjE3Njk2NTE2MjEsImV4cCI6MTc3MDI1NjQyMX0.-vUtSahxMjWQlw9Xkp-4wnmcAKyoDhphxbQQgdoNk7g
+Content-Type: application/json
+
+{"destinatario_id_05":5,"publicacion_id_05":1,"contenido_05":"Hola, estoy interesado en tu publicación"}

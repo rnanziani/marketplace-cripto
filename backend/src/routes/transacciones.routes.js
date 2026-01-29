@@ -1,27 +1,28 @@
 import express from 'express'
+import {
+  crearTransaccion,
+  listarTransacciones,
+  updateEstadoTransaccion,
+  calificarTransaccion
+} from '../controllers/transacciones.controller.js'
+import { verifyToken } from '../middlewares/auth.middleware.js'
+import { validateTransaccion } from '../middlewares/validation.middleware.js'
+
 const router = express.Router()
 
-// TODO: Implementar middleware de autenticación
-// TODO: Implementar controladores
+// Todas las rutas requieren autenticación
+router.use(verifyToken)
 
-// POST /api/transacciones
-router.post('/', (req, res) => {
-  res.json({ message: 'Endpoint de crear transacción - Por implementar' })
-})
+// POST /api/transacciones - Crear transacción
+router.post('/', validateTransaccion, crearTransaccion)
 
-// GET /api/transacciones
-router.get('/', (req, res) => {
-  res.json({ message: 'Endpoint de listar transacciones - Por implementar' })
-})
+// GET /api/transacciones - Listar transacciones del usuario
+router.get('/', listarTransacciones)
 
-// PUT /api/transacciones/:id/estado
-router.put('/:id/estado', (req, res) => {
-  res.json({ message: 'Endpoint de actualizar estado - Por implementar' })
-})
+// PUT /api/transacciones/:id/estado - Actualizar estado de transacción
+router.put('/:id/estado', updateEstadoTransaccion)
 
-// POST /api/transacciones/:id/calificar
-router.post('/:id/calificar', (req, res) => {
-  res.json({ message: 'Endpoint de calificar - Por implementar' })
-})
+// POST /api/transacciones/:id/calificar - Calificar transacción
+router.post('/:id/calificar', calificarTransaccion)
 
 export default router

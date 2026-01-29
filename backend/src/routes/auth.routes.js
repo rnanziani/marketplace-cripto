@@ -1,20 +1,17 @@
 import express from 'express'
+import { registro, login, verificar } from '../controllers/auth.controller.js'
+import { validateRegistro, validateLogin } from '../middlewares/validation.middleware.js'
+import { verifyToken } from '../middlewares/auth.middleware.js'
+
 const router = express.Router()
 
-// TODO: Implementar controladores
-// POST /api/auth/registro
-router.post('/registro', (req, res) => {
-  res.json({ message: 'Endpoint de registro - Por implementar' })
-})
+// POST /api/auth/registro - Registro de nuevo usuario
+router.post('/registro', validateRegistro, registro)
 
-// POST /api/auth/login
-router.post('/login', (req, res) => {
-  res.json({ message: 'Endpoint de login - Por implementar' })
-})
+// POST /api/auth/login - Inicio de sesión
+router.post('/login', validateLogin, login)
 
-// GET /api/auth/verificar
-router.get('/verificar', (req, res) => {
-  res.json({ message: 'Endpoint de verificación - Por implementar' })
-})
+// GET /api/auth/verificar - Verificar token (requiere autenticación)
+router.get('/verificar', verifyToken, verificar)
 
 export default router

@@ -11,6 +11,9 @@ import publicacionesRoutes from './routes/publicaciones.routes.js'
 import transaccionesRoutes from './routes/transacciones.routes.js'
 import mensajesRoutes from './routes/mensajes.routes.js'
 
+// Importar conexión a base de datos
+import { testConnection } from './database/db.js'
+
 dotenv.config()
 
 const app = express()
@@ -32,7 +35,17 @@ app.use('/api/mensajes', mensajesRoutes)
 
 // Ruta de prueba
 app.get('/api', (req, res) => {
-  res.json({ message: 'API Marketplace Cripto - Hito 1' })
+  res.json({ 
+    message: 'API Marketplace Cripto - Hito 3',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      usuarios: '/api/usuarios',
+      publicaciones: '/api/publicaciones',
+      transacciones: '/api/transacciones',
+      mensajes: '/api/mensajes'
+    }
+  })
 })
 
 // Manejo de errores
@@ -49,6 +62,10 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' })
 })
 
+// Probar conexión a la base de datos al iniciar
+testConnection()
+
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`)
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`)
+  console.log(`📚 API disponible en http://localhost:${PORT}/api`)
 })

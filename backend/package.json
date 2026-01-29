@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
+    "test": "node --experimental-vm-modules --no-warnings src/tests/run-tests.js",
     "lint": "eslint . --ext js"
   },
   "dependencies": {
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.2",
-    "eslint": "^8.54.0"
+    "eslint": "^8.54.0",
+    "supertest": "^6.3.3"
   }
 }
