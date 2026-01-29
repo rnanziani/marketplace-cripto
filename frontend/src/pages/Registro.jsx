@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import api from '../api/client'
 import './Registro.css'
 
 function Registro() {
@@ -49,28 +50,29 @@ function Registro() {
 
     setIsLoading(true)
     try {
-      // TODO: Hacer POST a /api/auth/register
-      // const response = await fetch('/api/auth/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // })
-      // const userData = await response.json()
-      
+      const { data } = await api.post('/api/auth/registro', {
+        email_00: formData.email,
+        username_00: formData.username,
+        password_hash_00: formData.password,
+        telefono_00: formData.telefono || null,
+        pais_00: formData.pais || null
+      })
       const userData = {
-        id: Date.now(),
-        email: formData.email,
-        username: formData.username,
-        telefono: formData.telefono,
-        pais: formData.pais,
-        token: 'mock-token'
+        id: data.usuario.id,
+        email: data.usuario.email,
+        username: data.usuario.username,
+        telefono: data.usuario.telefono,
+        pais: data.usuario.pais,
+        kycVerificado: data.usuario.kycVerificado,
+        createdAt: data.usuario.createdAt,
+        token: data.token
       }
-      
-      if (login(userData)) {
+      if (login(userData, data.token)) {
         navigate('/perfil')
       }
     } catch (error) {
-      setErrors({ submit: error.message })
+      const msg = error.response?.data?.message || error.response?.data?.error || error.message
+      setErrors({ submit: msg })
     } finally {
       setIsLoading(false)
     }

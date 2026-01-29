@@ -19,9 +19,15 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3000
 
-// Middlewares
+// CORS: en producción permitir el origen del frontend (Netlify, etc.)
+const corsOptions = {
+  origin: process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL.split(',').map((o) => o.trim())
+    : true,
+  credentials: true
+}
 app.use(helmet())
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))

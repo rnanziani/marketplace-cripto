@@ -1,4 +1,31 @@
 import { createContext, useContext, useState } from 'react'
+import api from '../api/client'
+
+// Mapear fila de la API al formato que usa el frontend
+function mapPublicacionFromApi(row) {
+  if (!row) return null
+  const imagenes = row.imagenes || []
+  const imagenPrincipal = Array.isArray(imagenes) && imagenes.length > 0
+    ? (imagenes.find((i) => i?.esPrincipal)?.url || imagenes[0]?.url)
+    : null
+  return {
+    id: row.id_02,
+    usuario_id: row.usuario_id_02,
+    username: row.username_00 || row.username,
+    tipo: row.tipo_02,
+    criptomoneda: row.criptomoneda_02,
+    cantidad: row.cantidad_02,
+    precio_unitario: row.precio_unitario_02,
+    moneda_fiat: row.moneda_fiat_02,
+    metodos_pago: row.metodos_pago_02 || [],
+    descripcion: row.descripcion_02,
+    ubicacion: row.ubicacion_02,
+    estado: row.estado_02,
+    created_at: row.created_at_02,
+    imagenes: imagenes,
+    imagen_principal: imagenPrincipal
+  }
+}
 
 // Crear contexto de publicaciones
 const PublicacionesContext = createContext()
@@ -6,6 +33,7 @@ const PublicacionesContext = createContext()
 // Proveedor de publicaciones
 export function PublicacionesProvider({ children }) {
   const [publicaciones, setPublicaciones] = useState([])
+  const [publicacionDetalle, setPublicacionDetalle] = useState(null)
   const [filtros, setFiltros] = useState({
     tipo: '',
     criptomoneda: '',
@@ -15,58 +43,60 @@ export function PublicacionesProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Función para obtener publicaciones (de la API)
   const fetchPublicaciones = async () => {
     setIsLoading(true)
     try {
-      // TODO: Reemplazar con llamada real a la API
-      // const response = await fetch('/api/publicaciones')
-      // const data = await response.json()
-      // setPublicaciones(data)
-      
-      // Por ahora usamos datos mock
-      setPublicaciones([])
+      const params = new URLSearchParams()
+      if (filtros.tipo) params.set('tipo', filtros.tipo)
+      if (filtros.criptomoneda) params.set('criptomoneda', filtros.criptomoneda)
+      const { data } = await api.get(`/api/publicaciones?${params.toString()}`)
+      const list = (data.publicaciones || []).map(mapPublicacionFromApi)
+      setPublicaciones(list)
       setError(null)
     } catch (err) {
-      setError(err.message)
+      setError(err.response?.data?.message || err.message)
+      setPublicaciones([])
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Función para crear una publicación
   const crearPublicacion = async (datosPublicacion) => {
     setIsLoading(true)
     try {
-      // TODO: Hacer POST a la API
-      // const response = await fetch('/api/publicaciones', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(datosPublicacion)
-      // })
-      // const nuevaPublicacion = await response.json()
-      // setPublicaciones([...publicaciones, nuevaPublicacion])
-      
-      console.log('Publicación creada:', datosPublicacion)
+      await api.post('/api/publicaciones', {
+        tipo_02: datosPublicacion.tipo,
+        criptomoneda_02: datosPublicacion.criptomoneda,
+        cantidad_02: parseFloat(datosPublicacion.cantidad),
+        precio_unitario_02: parseFloat(datosPublicacion.precio_unitario),
+        moneda_fiat_02: datosPublicacion.moneda_fiat || 'USD',
+        metodos_pago_02: Array.isArray(datosPublicacion.metodos_pago) ? datosPublicacion.metodos_pago : [],
+        descripcion_02: datosPublicacion.descripcion || null,
+        ubicacion_02: datosPublicacion.ubicacion || null
+      })
       setError(null)
+      await fetchPublicaciones()
       return true
     } catch (err) {
-      setError(err.message)
+      setError(err.response?.data?.message || err.response?.data?.error || err.message)
       return false
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Función para obtener una publicación por ID
   const obtenerPublicacion = async (id) => {
     setIsLoading(true)
     try {
-      // TODO: Hacer GET a /api/publicaciones/:id
-      console.log('Obteniendo publicación:', id)
+      const { data } = await api.get(`/api/publicaciones/${id}`)
+      const pub = mapPublicacionFromApi(data.publicacion)
+      setPublicacionDetalle(pub)
       setError(null)
+      return pub
     } catch (err) {
-      setError(err.message)
+      setError(err.response?.data?.message || err.message)
+      setPublicacionDetalle(null)
+      return null
     } finally {
       setIsLoading(false)
     }
@@ -89,6 +119,7 @@ export function PublicacionesProvider({ children }) {
 
   const value = {
     publicaciones,
+    publicacionDetalle,
     filtros,
     isLoading,
     error,

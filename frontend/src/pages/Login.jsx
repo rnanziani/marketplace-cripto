@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import api from '../api/client'
 import './Login.css'
 
 function Login() {
@@ -35,27 +36,26 @@ function Login() {
 
     setIsLoading(true)
     try {
-      // TODO: Hacer llamada a la API
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // })
-      // const userData = await response.json()
-      
-      // Mock de usuario para demostración
+      const { data } = await api.post('/api/auth/login', {
+        email_00: formData.email,
+        password_hash_00: formData.password
+      })
       const userData = {
-        id: 1,
-        email: formData.email,
-        username: formData.email.split('@')[0],
-        token: 'mock-token'
+        id: data.usuario.id,
+        email: data.usuario.email,
+        username: data.usuario.username,
+        telefono: data.usuario.telefono,
+        pais: data.usuario.pais,
+        kycVerificado: data.usuario.kycVerificado,
+        createdAt: data.usuario.createdAt,
+        token: data.token
       }
-      
-      if (login(userData)) {
+      if (login(userData, data.token)) {
         navigate('/perfil')
       }
     } catch (error) {
-      setErrors({ submit: error.message })
+      const msg = error.response?.data?.message || error.response?.data?.error || error.message
+      setErrors({ submit: msg })
     } finally {
       setIsLoading(false)
     }

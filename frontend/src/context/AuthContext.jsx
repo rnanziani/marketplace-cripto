@@ -25,9 +25,10 @@ export function AuthProvider({ children }) {
     setIsLoading(false)
   }, [])
 
-  // Función de login
-  const login = (userData) => {
+  // Función de login (userData puede incluir token; se guarda también por separado para el cliente API)
+  const login = (userData, token) => {
     try {
+      if (token) localStorage.setItem('token', token)
       setUser(userData)
       setIsAuthenticated(true)
       localStorage.setItem('user', JSON.stringify(userData))
@@ -44,6 +45,7 @@ export function AuthProvider({ children }) {
     setUser(null)
     setIsAuthenticated(false)
     localStorage.removeItem('user')
+    localStorage.removeItem('token')
     setError(null)
   }
 

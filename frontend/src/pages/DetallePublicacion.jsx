@@ -1,36 +1,46 @@
+import { useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { usePublicaciones } from '../context/PublicacionesContext'
 import './DetallePublicacion.css'
 
 function DetallePublicacion() {
   const { id } = useParams()
+  const { user, isAuthenticated } = useAuth()
+  const { publicacionDetalle, obtenerPublicacion, isLoading, error } = usePublicaciones()
 
-  // TODO: Obtener publicación desde la API usando el id
-  const publicacion = {
-    id: 1,
-    tipo: 'VENTA',
-    criptomoneda: 'BTC',
-    cantidad: '0.5',
-    precio_unitario: '45000',
-    moneda_fiat: 'USD',
-    metodos_pago: ['Transferencia Bancaria', 'PayPal'],
-    descripcion: 'Vendo Bitcoin de forma segura. Transacciones verificadas.',
-    ubicacion: 'Santiago, Chile',
-    estado: 'ACTIVO',
-    username: 'vendedor123',
-    imagenes: [
-      { id: 1, url: 'https://via.placeholder.com/600', es_principal: true },
-      { id: 2, url: 'https://via.placeholder.com/600', es_principal: false }
-    ],
-    vendedor: {
-      id: 2,
-      username: 'vendedor123',
-      reputacion: 4.5,
-      kyc_verificado: true
-    }
+  useEffect(() => {
+    if (id) obtenerPublicacion(id)
+  }, [id])
+
+  const publicacion = publicacionDetalle
+  const isOwner = isAuthenticated && user && publicacion && user.id === publicacion.usuario_id
+  const imagenes = publicacion?.imagenes || []
+  const imagenPrincipal = publicacion?.imagen_principal || (imagenes[0]?.url)
+
+  if (isLoading && !publicacion) {
+    return (
+      <div className="detalle-publicacion-container">
+        <p>Cargando...</p>
+      </div>
+    )
   }
-
-  const isAuthenticated = false // TODO: Obtener del contexto
-  const isOwner = false // TODO: Verificar si el usuario es el dueño
+  if (error && !publicacion) {
+    return (
+      <div className="detalle-publicacion-container">
+        <p className="error-message">{error}</p>
+        <Link to="/publicaciones">← Volver a Publicaciones</Link>
+      </div>
+    )
+  }
+  if (!publicacion) {
+    return (
+      <div className="detalle-publicacion-container">
+        <p>Publicación no encontrada.</p>
+        <Link to="/publicaciones">← Volver a Publicaciones</Link>
+      </div>
+    )
+  }
 
   return (
     <div className="detalle-publicacion-container">
@@ -41,12 +51,12 @@ function DetallePublicacion() {
       <div className="detalle-grid">
         <div className="detalle-imagenes">
           <div className="imagen-principal">
-            <img src={publicacion.imagenes[0].url} alt={publicacion.criptomoneda} />
+            <img src={imagenPrincipal || 'https://via.placeholder.com/600'} alt={publicacion.criptomoneda} />
           </div>
-          {publicacion.imagenes.length > 1 && (
+          {imagenes.length > 1 && (
             <div className="imagenes-miniaturas">
-              {publicacion.imagenes.map(img => (
-                <img key={img.id} src={img.url} alt={`Imagen ${img.id}`} />
+              {imagenes.map((img, idx) => (
+                <img key={img?.id || idx} src={img?.url} alt={`Imagen ${idx + 1}`} />
               ))}
             </div>
           )}
@@ -54,10 +64,10 @@ function DetallePublicacion() {
 
         <div className="detalle-info">
           <div className="badge-header">
-            <span className={`badge ${publicacion.tipo.toLowerCase()}`}>
+            <span className={`badge ${(publicacion.tipo || '').toLowerCase()}`}>
               {publicacion.tipo}
             </span>
-            <span className={`estado ${publicacion.estado.toLowerCase()}`}>
+            <span className={`estado ${(publicacion.estado || '').toLowerCase()}`}>
               {publicacion.estado}
             </span>
           </div>
@@ -75,13 +85,13 @@ function DetallePublicacion() {
 
           <div className="detalle-section">
             <h3>Descripción</h3>
-            <p>{publicacion.descripcion}</p>
+            <p>{publicacion.descripcion || 'Sin descripción'}</p>
           </div>
 
           <div className="detalle-section">
             <h3>Métodos de Pago</h3>
             <ul className="metodos-pago-list">
-              {publicacion.metodos_pago.map((metodo, index) => (
+              {(publicacion.metodos_pago || []).map((metodo, index) => (
                 <li key={index}>{metodo}</li>
               ))}
             </ul>
@@ -89,15 +99,13 @@ function DetallePublicacion() {
 
           <div className="detalle-section">
             <h3>Ubicación</h3>
-            <p>{publicacion.ubicacion}</p>
+            <p>{publicacion.ubicacion || 'No especificada'}</p>
           </div>
 
           <div className="vendedor-info">
             <h3>Vendedor</h3>
             <div className="vendedor-details">
-              <p><strong>Username:</strong> {publicacion.vendedor.username}</p>
-              <p><strong>Reputación:</strong> {publicacion.vendedor.reputacion} ⭐</p>
-              <p><strong>KYC:</strong> {publicacion.vendedor.kyc_verificado ? '✓ Verificado' : 'Pendiente'}</p>
+              <p><strong>Username:</strong> {publicacion.username}</p>
             </div>
           </div>
 
