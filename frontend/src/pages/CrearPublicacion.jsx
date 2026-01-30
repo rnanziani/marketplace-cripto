@@ -117,6 +117,13 @@ function CrearPublicacion() {
               <option value="USDT">Tether (USDT)</option>
               <option value="BNB">Binance Coin (BNB)</option>
               <option value="ADA">Cardano (ADA)</option>
+              <option value="XRP">Ripple (XRP)</option>
+              <option value="XLM">Stellar (XLM)</option>
+              <option value="XDC">XinFin (XDC)</option>
+              <option value="HBAR">Hedera Hashgraph (HBAR)</option>
+              <option value="IOTA">IOTA (IOTA)</option>
+              <option value="ALGO">Algorand (ALGO)</option>
+              <option value="ZBCN">Zebec (ZBCN)</option>
             </select>
             {errors.criptomoneda && <span className="error-text">{errors.criptomoneda}</span>}
           </div>

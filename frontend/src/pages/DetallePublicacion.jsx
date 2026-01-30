@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { usePublicaciones } from '../context/PublicacionesContext'
+import { getPublicationImageUrl } from '../utils/cryptoImages'
 import './DetallePublicacion.css'
 
 function DetallePublicacion() {
@@ -51,7 +52,14 @@ function DetallePublicacion() {
       <div className="detalle-grid">
         <div className="detalle-imagenes">
           <div className="imagen-principal">
-            <img src={imagenPrincipal || 'https://via.placeholder.com/600'} alt={publicacion.criptomoneda} />
+            <img
+              src={imagenPrincipal || getPublicationImageUrl(publicacion)}
+              alt={`${publicacion.criptomoneda} - ${publicacion.cantidad}`}
+              onError={(e) => {
+                e.target.onerror = null
+                e.target.src = 'https://via.placeholder.com/600?text=CRYPTO'
+              }}
+            />
           </div>
           {imagenes.length > 1 && (
             <div className="imagenes-miniaturas">

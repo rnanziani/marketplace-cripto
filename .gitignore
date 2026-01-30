@@ -11,6 +11,8 @@ pnpm-lock.yaml
 .env.test.local
 .env.production
 .env*.local
+.env.example
+
 
 # Build outputs
 dist/

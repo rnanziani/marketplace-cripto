@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { usePublicaciones } from '../context/PublicacionesContext'
+import { getPublicationImageUrl } from '../utils/cryptoImages'
 import './GaleriaPublicaciones.css'
 
 function GaleriaPublicaciones() {
@@ -16,6 +17,8 @@ function GaleriaPublicaciones() {
     })
   }
 
+  const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/300?text=CRYPTO'
+
   // Mock de datos para demostración
   const publicacionesMock = [
     {
@@ -27,8 +30,7 @@ function GaleriaPublicaciones() {
       moneda_fiat: 'USD',
       metodos_pago: ['Transferencia', 'PayPal'],
       ubicacion: 'Santiago, Chile',
-      username: 'vendedor123',
-      imagen_principal: 'https://via.placeholder.com/300'
+      username: 'vendedor123'
     },
     {
       id: 2,
@@ -39,8 +41,7 @@ function GaleriaPublicaciones() {
       moneda_fiat: 'USD',
       metodos_pago: ['PayPal'],
       ubicacion: 'Buenos Aires, Argentina',
-      username: 'trader456',
-      imagen_principal: 'https://via.placeholder.com/300'
+      username: 'trader456'
     }
   ]
 
@@ -125,7 +126,14 @@ function GaleriaPublicaciones() {
               className="publicacion-card"
             >
               <div className="publicacion-imagen">
-                <img src={publicacion.imagen_principal} alt={publicacion.criptomoneda} />
+                <img
+                  src={getPublicationImageUrl(publicacion)}
+                  alt={`${publicacion.criptomoneda} - ${publicacion.cantidad}`}
+                  onError={(e) => {
+                    e.target.onerror = null
+                    e.target.src = PLACEHOLDER_IMAGE
+                  }}
+                />
                 <span className={`badge ${publicacion.tipo.toLowerCase()}`}>
                   {publicacion.tipo}
                 </span>
