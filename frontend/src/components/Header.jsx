@@ -22,6 +22,9 @@ function Header() {
           {isAuthenticated ? (
             <>
               <span className="user-greeting">Hola, {user?.username}</span>
+              <Link to="/publicaciones" className="nav-link">
+                Ver Publicaciones
+              </Link>
               <Link to="/publicaciones/crear" className="nav-link">
                 Crear Publicación
               </Link>
@@ -34,6 +37,9 @@ function Header() {
             </>
           ) : (
             <>
+              <Link to="/publicaciones" className="nav-link">
+                Ver Publicaciones
+              </Link>
               <Link to="/login" className="nav-link">
                 Iniciar Sesión
               </Link>

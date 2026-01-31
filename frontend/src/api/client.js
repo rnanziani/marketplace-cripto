@@ -30,7 +30,9 @@ client.interceptors.response.use(
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       // Opcional: redirigir a login si la app usa React Router
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/registro') {
+      const publicPaths = ['/', '/login', '/registro', '/publicaciones', '/olvidar-contrasena', '/restablecer-contrasena']
+      const isPublicPath = publicPaths.some(p => p === '/' ? window.location.pathname === '/' : window.location.pathname.startsWith(p))
+      if (!isPublicPath) {
         window.location.href = '/login'
       }
     }

@@ -5,11 +5,15 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import Home from './pages/Home'
 import Login from './pages/Login'
+import OlvidarContrasena from './pages/OlvidarContrasena'
+import RestablecerContrasena from './pages/RestablecerContrasena'
 import Registro from './pages/Registro'
 import Perfil from './pages/Perfil'
 import CrearPublicacion from './pages/CrearPublicacion'
+import EditarPublicacion from './pages/EditarPublicacion'
 import GaleriaPublicaciones from './pages/GaleriaPublicaciones'
 import DetallePublicacion from './pages/DetallePublicacion'
+import DetalleTransaccion from './pages/DetalleTransaccion'
 import './App.css'
 
 // Componente para rutas protegidas
@@ -35,11 +39,29 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/olvidar-contrasena" element={<OlvidarContrasena />} />
+          <Route path="/restablecer-contrasena" element={<RestablecerContrasena />} />
           <Route path="/registro" element={<Registro />} />
           <Route path="/publicaciones" element={<GaleriaPublicaciones />} />
+          <Route
+            path="/publicaciones/:id/editar"
+            element={
+              <ProtectedRoute>
+                <EditarPublicacion />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/publicaciones/:id" element={<DetallePublicacion />} />
-          
+
           {/* Rutas protegidas */}
+          <Route
+            path="/transacciones/:id"
+            element={
+              <ProtectedRoute>
+                <DetalleTransaccion />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/perfil"
             element={

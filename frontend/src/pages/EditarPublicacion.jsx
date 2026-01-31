@@ -1,10 +1,25 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import { useAuth } from '../context/AuthContext'
 import { usePublicaciones } from '../context/PublicacionesContext'
 import './CrearPublicacion.css'
 
-function CrearPublicacion() {
+const metodosPagoDisponibles = [
+  'Transferencia Bancaria',
+  'PayPal',
+  'Efectivo',
+  'Zelle',
+  'Wise',
+  'Otro'
+]
+
+function EditarPublicacion() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const { user, isAuthenticated } = useAuth()
+  const { publicacionDetalle, obtenerPublicacion, actualizarPublicacion, isLoading } = usePublicaciones()
+
   const [formData, setFormData] = useState({
     tipo: 'VENTA',
     criptomoneda: '',
@@ -16,22 +31,32 @@ function CrearPublicacion() {
     ubicacion: ''
   })
   const [errors, setErrors] = useState({})
-  const [isLoading, setIsLoading] = useState(false)
-  const { crearPublicacion } = usePublicaciones()
-  const navigate = useNavigate()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const metodosPagoDisponibles = [
-    'Transferencia Bancaria',
-    'PayPal',
-    'Efectivo',
-    'Zelle',
-    'Wise',
-    'Otro'
-  ]
+  useEffect(() => {
+    if (id) obtenerPublicacion(id)
+  }, [id])
+
+  useEffect(() => {
+    if (publicacionDetalle) {
+      setFormData({
+        tipo: publicacionDetalle.tipo || 'VENTA',
+        criptomoneda: publicacionDetalle.criptomoneda || '',
+        cantidad: String(publicacionDetalle.cantidad ?? ''),
+        precio_unitario: String(publicacionDetalle.precio_unitario ?? ''),
+        moneda_fiat: publicacionDetalle.moneda_fiat || 'USD',
+        metodos_pago: Array.isArray(publicacionDetalle.metodos_pago) ? publicacionDetalle.metodos_pago : [],
+        descripcion: publicacionDetalle.descripcion || '',
+        ubicacion: publicacionDetalle.ubicacion || ''
+      })
+    }
+  }, [publicacionDetalle])
+
+  const isOwner = isAuthenticated && user && publicacionDetalle && user.id === publicacionDetalle.usuario_id
 
   const handleChange = (e) => {
-    const value = e.target.type === 'checkbox' 
-      ? (e.target.checked 
+    const value = e.target.type === 'checkbox'
+      ? (e.target.checked
           ? [...formData.metodos_pago, e.target.value]
           : formData.metodos_pago.filter(m => m !== e.target.value))
       : e.target.value
@@ -46,7 +71,6 @@ function CrearPublicacion() {
     e.preventDefault()
     const newErrors = {}
 
-    // Validaciones
     if (!formData.criptomoneda) newErrors.criptomoneda = 'Criptomoneda requerida'
     if (!formData.cantidad || parseFloat(formData.cantidad) <= 0) {
       newErrors.cantidad = 'Cantidad válida requerida'
@@ -63,48 +87,73 @@ function CrearPublicacion() {
       return
     }
 
-    setIsLoading(true)
+    setIsSubmitting(true)
     setErrors({})
-    try {
-      const success = await crearPublicacion(formData)
-      if (success) {
-        await Swal.fire({
-          icon: 'success',
-          title: 'Publicación creada',
-          text: 'Tu publicación ha sido creada correctamente y ya está visible.',
-          confirmButtonColor: '#2563eb',
-          timer: 2000,
-          timerProgressBar: true
-        })
-        navigate('/publicaciones')
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al crear',
-          text: 'No se pudo crear la publicación. Verifica tus datos e intenta de nuevo.',
-          confirmButtonColor: '#dc2626'
-        })
-      }
-    } catch (error) {
+    const { success, errorMessage } = await actualizarPublicacion(id, {
+      tipo: formData.tipo,
+      criptomoneda: formData.criptomoneda,
+      cantidad: formData.cantidad,
+      precio_unitario: formData.precio_unitario,
+      moneda_fiat: formData.moneda_fiat,
+      metodos_pago: formData.metodos_pago,
+      descripcion: formData.descripcion,
+      ubicacion: formData.ubicacion
+    })
+    setIsSubmitting(false)
+    if (success) {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Cambios guardados',
+        text: 'Tu publicación ha sido actualizada correctamente.',
+        confirmButtonColor: '#2563eb',
+        timer: 2000,
+        timerProgressBar: true
+      })
+      navigate(`/publicaciones/${id}`)
+    } else {
       Swal.fire({
         icon: 'error',
-        title: 'Error al crear',
-        text: error.message || 'No se pudo crear la publicación.',
+        title: 'Error al guardar',
+        text: errorMessage || 'No se pudieron guardar los cambios.',
         confirmButtonColor: '#dc2626'
       })
-    } finally {
-      setIsLoading(false)
     }
   }
 
   const handleCancel = () => {
-    navigate('/publicaciones')
+    navigate(`/publicaciones/${id}`)
+  }
+
+  if (isLoading && !publicacionDetalle) {
+    return (
+      <div className="crear-publicacion-container">
+        <p>Cargando...</p>
+      </div>
+    )
+  }
+
+  if (!publicacionDetalle) {
+    return (
+      <div className="crear-publicacion-container">
+        <p>Publicación no encontrada.</p>
+        <button type="button" onClick={() => navigate('/publicaciones')}>Volver a Publicaciones</button>
+      </div>
+    )
+  }
+
+  if (!isOwner) {
+    return (
+      <div className="crear-publicacion-container">
+        <p>No tienes permiso para editar esta publicación.</p>
+        <button type="button" onClick={() => navigate(`/publicaciones/${id}`)}>Volver al detalle</button>
+      </div>
+    )
   }
 
   return (
     <div className="crear-publicacion-container">
       <div className="crear-publicacion-card">
-        <h1>Crear Publicación</h1>
+        <h1>Editar Publicación</h1>
 
         <form onSubmit={handleSubmit} className="crear-publicacion-form">
           <div className="form-group">
@@ -242,20 +291,9 @@ function CrearPublicacion() {
             />
           </div>
 
-          <div className="form-group">
-            <label>Imágenes *</label>
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              className="file-input"
-            />
-            <small>Mínimo 1 imagen, máximo 5. Marca una como principal.</small>
-          </div>
-
           <div className="form-actions">
-            <button type="submit" className="btn-submit" disabled={isLoading}>
-              {isLoading ? 'Publicando...' : 'Publicar'}
+            <button type="submit" className="btn-submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Guardando...' : 'Guardar cambios'}
             </button>
             <button type="button" className="btn-cancel" onClick={handleCancel}>
               Cancelar
@@ -267,4 +305,4 @@ function CrearPublicacion() {
   )
 }
 
-export default CrearPublicacion
+export default EditarPublicacion

@@ -5,7 +5,7 @@ import pool from '../database/db.js'
  */
 export const listarPublicaciones = async (req, res) => {
   try {
-    const { tipo, criptomoneda, estado, limit = 20, offset = 0 } = req.query
+    const { tipo, criptomoneda, estado, metodo_pago, ubicacion, limit = 20, offset = 0 } = req.query
 
     let query = `
       SELECT 
@@ -56,6 +56,20 @@ export const listarPublicaciones = async (req, res) => {
     } else {
       // Por defecto, solo mostrar publicaciones activas
       query += ` AND p.estado_02 = 'ACTIVO'`
+    }
+
+    if (metodo_pago && metodo_pago.trim()) {
+      query += ` AND EXISTS (
+        SELECT 1 FROM unnest(COALESCE(p.metodos_pago_02, '{}')) AS m(metodo)
+        WHERE LOWER(m.metodo) = LOWER($${paramCount})
+      )`
+      queryParams.push(metodo_pago.trim())
+      paramCount++
+    }
+
+    if (ubicacion && ubicacion.trim()) {
+      query += ` AND p.ubicacion_02 ILIKE $${paramCount++}`
+      queryParams.push(`%${ubicacion.trim()}%`)
     }
 
     query += ` GROUP BY p.id_02, u.username_00`

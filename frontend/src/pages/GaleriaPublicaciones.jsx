@@ -5,11 +5,12 @@ import { getPublicationImageUrl } from '../utils/cryptoImages'
 import './GaleriaPublicaciones.css'
 
 function GaleriaPublicaciones() {
-  const { publicaciones, filtros, isLoading, actualizarFiltros, limpiarFiltros, fetchPublicaciones } = usePublicaciones()
+  const { publicaciones, filtros, isLoading, error, actualizarFiltros, limpiarFiltros, fetchPublicaciones } = usePublicaciones()
 
   useEffect(() => {
     fetchPublicaciones()
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Refetch when filters change
+  }, [filtros.tipo, filtros.criptomoneda, filtros.metodo_pago, filtros.ubicacion])
 
   const handleFilterChange = (e) => {
     actualizarFiltros({
@@ -51,6 +52,15 @@ function GaleriaPublicaciones() {
     <div className="galeria-container">
       <h1>Publicaciones</h1>
 
+      {error && (
+        <div className="galeria-error" role="alert">
+          <p>No se pudieron cargar las publicaciones. Verifica que el servidor esté en ejecución.</p>
+          <button type="button" className="btn-reintentar" onClick={() => fetchPublicaciones()}>
+            Reintentar
+          </button>
+        </div>
+      )}
+
       <div className="filtros-section">
         <h2>Filtros</h2>
         <div className="filtros-grid">
@@ -77,9 +87,18 @@ function GaleriaPublicaciones() {
               onChange={handleFilterChange}
             >
               <option value="">Todas</option>
-              <option value="BTC">Bitcoin</option>
-              <option value="ETH">Ethereum</option>
-              <option value="USDT">Tether</option>
+              <option value="BTC">Bitcoin (BTC)</option>
+              <option value="ETH">Ethereum (ETH)</option>
+              <option value="USDT">Tether (USDT)</option>
+              <option value="BNB">Binance Coin (BNB)</option>
+              <option value="ADA">Cardano (ADA)</option>
+              <option value="XRP">Ripple (XRP)</option>
+              <option value="XLM">Stellar (XLM)</option>
+              <option value="XDC">XinFin (XDC)</option>
+              <option value="HBAR">Hedera Hashgraph (HBAR)</option>
+              <option value="IOTA">IOTA (IOTA)</option>
+              <option value="ALGO">Algorand (ALGO)</option>
+              <option value="ZBCN">Zebec (ZBCN)</option>
             </select>
           </div>
 
@@ -92,9 +111,12 @@ function GaleriaPublicaciones() {
               onChange={handleFilterChange}
             >
               <option value="">Todos</option>
-              <option value="Transferencia">Transferencia</option>
+              <option value="Transferencia Bancaria">Transferencia Bancaria</option>
               <option value="PayPal">PayPal</option>
               <option value="Efectivo">Efectivo</option>
+              <option value="Zelle">Zelle</option>
+              <option value="Wise">Wise</option>
+              <option value="Otro">Otro</option>
             </select>
           </div>
 
@@ -110,7 +132,7 @@ function GaleriaPublicaciones() {
             />
           </div>
         </div>
-        <button className="btn-limpiar" onClick={limpiarFiltros}>
+        <button className="btn-limpiar" onClick={() => limpiarFiltros()} type="button">
           Limpiar Filtros
         </button>
       </div>
@@ -144,7 +166,7 @@ function GaleriaPublicaciones() {
                   {publicacion.precio_unitario} {publicacion.moneda_fiat}
                 </p>
                 <p className="metodos-pago">
-                  {publicacion.metodos_pago.join(', ')}
+                  {(publicacion.metodos_pago || []).join(', ')}
                 </p>
                 <p className="ubicacion">{publicacion.ubicacion}</p>
                 <p className="vendedor">Por: {publicacion.username}</p>

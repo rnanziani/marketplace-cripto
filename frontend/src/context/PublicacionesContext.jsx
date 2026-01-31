@@ -42,6 +42,7 @@ export function PublicacionesProvider({ children }) {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [misPublicaciones, setMisPublicaciones] = useState([])
 
   const fetchPublicaciones = async () => {
     setIsLoading(true)
@@ -49,6 +50,8 @@ export function PublicacionesProvider({ children }) {
       const params = new URLSearchParams()
       if (filtros.tipo) params.set('tipo', filtros.tipo)
       if (filtros.criptomoneda) params.set('criptomoneda', filtros.criptomoneda)
+      if (filtros.metodo_pago) params.set('metodo_pago', filtros.metodo_pago)
+      if (filtros.ubicacion?.trim()) params.set('ubicacion', filtros.ubicacion.trim())
       const { data } = await api.get(`/api/publicaciones?${params.toString()}`)
       const list = (data.publicaciones || []).map(mapPublicacionFromApi)
       setPublicaciones(list)
@@ -102,6 +105,32 @@ export function PublicacionesProvider({ children }) {
     }
   }
 
+  /** Actualizar una publicación (PUT). Acepta objeto con campos en formato API (tipo_02, etc.) o frontend (tipo, etc.). Retorna { success, errorMessage } */
+  const actualizarPublicacion = async (id, datos) => {
+    try {
+      const body = {
+        tipo_02: datos.tipo_02 ?? datos.tipo,
+        criptomoneda_02: datos.criptomoneda_02 ?? datos.criptomoneda,
+        cantidad_02: datos.cantidad_02 ?? (datos.cantidad != null ? parseFloat(datos.cantidad) : undefined),
+        precio_unitario_02: datos.precio_unitario_02 ?? (datos.precio_unitario != null ? parseFloat(datos.precio_unitario) : undefined),
+        moneda_fiat_02: datos.moneda_fiat_02 ?? datos.moneda_fiat,
+        metodos_pago_02: datos.metodos_pago_02 ?? datos.metodos_pago,
+        descripcion_02: datos.descripcion_02 ?? datos.descripcion,
+        ubicacion_02: datos.ubicacion_02 ?? datos.ubicacion,
+        estado_02: datos.estado_02 ?? datos.estado
+      }
+      const clean = Object.fromEntries(Object.entries(body).filter(([, v]) => v !== undefined))
+      if (Object.keys(clean).length === 0) return { success: false, errorMessage: 'Sin campos para actualizar' }
+      await api.put(`/api/publicaciones/${id}`, clean)
+      setError(null)
+      return { success: true }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.error || err.message
+      setError(msg)
+      return { success: false, errorMessage: msg }
+    }
+  }
+
   // Función para actualizar filtros
   const actualizarFiltros = (nuevosFiltros) => {
     setFiltros({ ...filtros, ...nuevosFiltros })
@@ -117,15 +146,38 @@ export function PublicacionesProvider({ children }) {
     })
   }
 
+  /** Obtener las publicaciones del usuario autenticado (requiere token). */
+  const fetchMisPublicaciones = async (username = '') => {
+    setIsLoading(true)
+    try {
+      const { data } = await api.get('/api/publicaciones/mis-publicaciones')
+      const list = (data.publicaciones || []).map((row) =>
+        mapPublicacionFromApi({ ...row, username_00: username })
+      )
+      setMisPublicaciones(list)
+      setError(null)
+      return list
+    } catch (err) {
+      setError(err.response?.data?.message || err.message)
+      setMisPublicaciones([])
+      return []
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const value = {
     publicaciones,
     publicacionDetalle,
+    misPublicaciones,
     filtros,
     isLoading,
     error,
     fetchPublicaciones,
+    fetchMisPublicaciones,
     crearPublicacion,
     obtenerPublicacion,
+    actualizarPublicacion,
     actualizarFiltros,
     limpiarFiltros,
   }

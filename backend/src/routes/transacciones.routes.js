@@ -2,6 +2,7 @@ import express from 'express'
 import {
   crearTransaccion,
   listarTransacciones,
+  getTransaccion,
   updateEstadoTransaccion,
   calificarTransaccion
 } from '../controllers/transacciones.controller.js'
@@ -18,6 +19,9 @@ router.post('/', validateTransaccion, crearTransaccion)
 
 // GET /api/transacciones - Listar transacciones del usuario
 router.get('/', listarTransacciones)
+
+// GET /api/transacciones/:id - Obtener una transacción
+router.get('/:id', getTransaccion)
 
 // PUT /api/transacciones/:id/estado - Actualizar estado de transacción
 router.put('/:id/estado', updateEstadoTransaccion)

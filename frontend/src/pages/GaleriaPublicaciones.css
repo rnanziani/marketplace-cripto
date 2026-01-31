@@ -7,6 +7,33 @@
   color: var(--text-color);
 }
 
+.galeria-error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.galeria-error p {
+  margin: 0 0 0.75rem;
+}
+
+.btn-reintentar {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.btn-reintentar:hover {
+  background-color: #b91c1c;
+}
+
 .filtros-section {
   background-color: var(--bg-color);
   padding: 1.5rem;
@@ -161,6 +188,12 @@
   color: var(--text-light);
   font-size: 0.875rem;
   margin-top: auto;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-light);
 }
 
 .sin-resultados {

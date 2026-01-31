@@ -1,5 +1,5 @@
 import express from 'express'
-import { registro, login, verificar } from '../controllers/auth.controller.js'
+import { registro, login, verificar, forgotPassword, resetPassword } from '../controllers/auth.controller.js'
 import { validateRegistro, validateLogin } from '../middlewares/validation.middleware.js'
 import { verifyToken } from '../middlewares/auth.middleware.js'
 
@@ -13,5 +13,11 @@ router.post('/login', validateLogin, login)
 
 // GET /api/auth/verificar - Verificar token (requiere autenticación)
 router.get('/verificar', verifyToken, verificar)
+
+// POST /api/auth/forgot-password - Solicitar recuperación de contraseña
+router.post('/forgot-password', forgotPassword)
+
+// POST /api/auth/reset-password - Restablecer contraseña con token
+router.post('/reset-password', resetPassword)
 
 export default router

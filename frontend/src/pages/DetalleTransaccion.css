@@ -1,0 +1,318 @@
+.detalle-transaccion-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.detalle-transaccion-volver {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.detalle-transaccion-volver:hover {
+  color: #1d4ed8;
+}
+
+.detalle-transaccion-error {
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+.detalle-transaccion-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.detalle-transaccion-header h1 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.75rem;
+}
+
+.detalle-transaccion-estado {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.detalle-transaccion-estado.estado-pendiente {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.detalle-transaccion-estado.estado-en-espera-pago {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.detalle-transaccion-estado.estado-completada {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.detalle-transaccion-estado.estado-cancelada {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.detalle-transaccion-estado.estado-disputa {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+}
+
+.detalle-transaccion-section {
+  background-color: var(--bg-color);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+}
+
+.detalle-transaccion-section h2 {
+  margin: 0 0 1rem;
+  color: var(--text-color);
+  font-size: 1.25rem;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.detalle-transaccion-dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1.5rem;
+  margin: 0;
+}
+
+.detalle-transaccion-dl dt {
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+.detalle-transaccion-dl dd {
+  margin: 0;
+  color: var(--text-color);
+}
+
+.detalle-transaccion-total {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.form-estado,
+.form-calificar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 400px;
+}
+
+.form-estado label,
+.form-calificar label,
+.form-mensaje label {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.form-estado select,
+.form-estado input[type="text"],
+.form-calificar select,
+.form-mensaje textarea {
+  padding: 0.75rem;
+  border: 2px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+
+.form-error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.btn-actualizar,
+.btn-calificar {
+  align-self: flex-start;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-actualizar:hover:not(:disabled),
+.btn-calificar:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.btn-actualizar:disabled,
+.btn-calificar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.detalle-transaccion-calificaciones {
+  margin: 0 0 1.5rem;
+  padding: 1rem;
+  background-color: var(--bg-light);
+  border-radius: 0.5rem;
+  color: var(--text-color);
+}
+
+.detalle-transaccion-mensajes {
+  margin-bottom: 1rem;
+}
+
+.btn-toggle-mensajes {
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-light);
+  color: var(--primary-color);
+  border: 2px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: left;
+}
+
+.btn-toggle-mensajes:hover {
+  border-color: var(--primary-color);
+  background-color: var(--bg-color);
+}
+
+.mensajes-panel {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: var(--bg-light);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.mensajes-panel[hidden] {
+  display: none;
+}
+
+.mensajes-loading {
+  margin: 0;
+  color: var(--text-light);
+}
+
+.mensajes-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.mensaje-vacio {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.mensaje-item {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: var(--bg-color);
+  border-radius: 0.5rem;
+  border-left: 4px solid var(--primary-color);
+}
+
+.mensaje-item.mensaje-propio {
+  border-left-color: var(--secondary-color);
+}
+
+.mensaje-autor {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-color);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.mensaje-contenido {
+  margin: 0 0 0.25rem;
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.mensaje-fecha {
+  font-size: 0.75rem;
+  color: var(--text-light);
+}
+
+.form-mensaje {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-mensaje textarea {
+  padding: 0.75rem;
+  border: 2px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.btn-enviar-mensaje {
+  align-self: flex-start;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-enviar-mensaje:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.btn-enviar-mensaje:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.detalle-transaccion-link-publicacion {
+  margin: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.detalle-transaccion-link-publicacion a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.detalle-transaccion-link-publicacion a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .detalle-transaccion-container {
+    padding: 0.75rem;
+  }
+
+  .detalle-transaccion-dl {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import pool from '../database/db.js'
@@ -176,6 +177,133 @@ export const verificar = async (req, res) => {
     console.error('Error en verificar:', error)
     res.status(500).json({
       error: 'Error al verificar token',
+      message: 'Error interno del servidor'
+    })
+  }
+}
+
+/**
+ * Solicitar recuperación de contraseña. Genera un token y lo guarda.
+ * En producción se enviaría por email; en desarrollo se retorna el link.
+ */
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email_00 } = req.body
+
+    if (!email_00 || !email_00.trim()) {
+      return res.status(400).json({
+        error: 'Email requerido',
+        message: 'Indica el email de tu cuenta'
+      })
+    }
+
+    const emailNorm = email_00.trim().toLowerCase()
+    const usuarioResult = await pool.query(
+      'SELECT id_00, email_00 FROM tbl_00_usuarios WHERE LOWER(email_00) = $1',
+      [emailNorm]
+    )
+
+    if (usuarioResult.rows.length === 0) {
+      return res.status(404).json({
+        error: 'Email no encontrado',
+        message: 'No existe ninguna cuenta con ese email'
+      })
+    }
+
+    const usuario = usuarioResult.rows[0]
+
+    await pool.query(
+      'DELETE FROM tbl_00_password_reset_tokens WHERE usuario_id_06 = $1',
+      [usuario.id_00]
+    )
+
+    const token = crypto.randomBytes(32).toString('hex')
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000)
+
+    await pool.query(
+      `INSERT INTO tbl_00_password_reset_tokens (usuario_id_06, token_06, expires_at_06)
+       VALUES ($1, $2, $3)`,
+      [usuario.id_00, token, expiresAt]
+    )
+
+    const baseUrl = req.body.frontend_base_url || req.headers.origin || 'http://localhost:5173'
+    const resetLink = `${baseUrl.replace(/\/$/, '')}/restablecer-contrasena?token=${token}`
+
+    res.json({
+      message: 'Si el email existe en nuestra base de datos, recibirás un enlace para restablecer tu contraseña.',
+      resetLink: process.env.NODE_ENV === 'production' ? undefined : resetLink
+    })
+  } catch (error) {
+    console.error('Error en forgotPassword:', error)
+    res.status(500).json({
+      error: 'Error al procesar solicitud',
+      message: 'Error interno del servidor'
+    })
+  }
+}
+
+/**
+ * Restablecer contraseña con el token recibido.
+ */
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, password_hash_00 } = req.body
+
+    if (!token || !password_hash_00) {
+      return res.status(400).json({
+        error: 'Datos incompletos',
+        message: 'Token y nueva contraseña son requeridos'
+      })
+    }
+
+    if (password_hash_00.length < 6) {
+      return res.status(400).json({
+        error: 'Contraseña inválida',
+        message: 'La contraseña debe tener al menos 6 caracteres'
+      })
+    }
+
+    const tokenResult = await pool.query(
+      `SELECT prt.usuario_id_06, prt.expires_at_06
+       FROM tbl_00_password_reset_tokens prt
+       WHERE prt.token_06 = $1`,
+      [token]
+    )
+
+    if (tokenResult.rows.length === 0) {
+      return res.status(400).json({
+        error: 'Token inválido',
+        message: 'El enlace de recuperación no es válido o ya fue usado'
+      })
+    }
+
+    const { usuario_id_06, expires_at_06 } = tokenResult.rows[0]
+
+    if (new Date(expires_at_06) < new Date()) {
+      await pool.query('DELETE FROM tbl_00_password_reset_tokens WHERE token_06 = $1', [token])
+      return res.status(400).json({
+        error: 'Token expirado',
+        message: 'El enlace ha caducado. Solicita uno nuevo.'
+      })
+    }
+
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password_hash_00, salt)
+
+    await pool.query(
+      'UPDATE tbl_00_usuarios SET password_hash_00 = $1 WHERE id_00 = $2',
+      [hashedPassword, usuario_id_06]
+    )
+
+    await pool.query('DELETE FROM tbl_00_password_reset_tokens WHERE token_06 = $1', [token])
+
+    res.json({
+      message: 'Contraseña restablecida correctamente. Ya puedes iniciar sesión.'
+    })
+  } catch (error) {
+    console.error('Error en resetPassword:', error)
+    res.status(500).json({
+      error: 'Error al restablecer contraseña',
       message: 'Error interno del servidor'
     })
   }

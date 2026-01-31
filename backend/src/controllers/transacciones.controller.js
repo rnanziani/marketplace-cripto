@@ -159,6 +159,59 @@ export const listarTransacciones = async (req, res) => {
 }
 
 /**
+ * Controlador para obtener una transacción por ID (solo si el usuario es comprador o vendedor)
+ */
+export const getTransaccion = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const result = await pool.query(
+      `SELECT 
+        t.*,
+        c.username_00 as comprador_username,
+        v.username_00 as vendedor_username,
+        p.criptomoneda_02,
+        p.tipo_02 as publicacion_tipo,
+        p.precio_unitario_02,
+        p.moneda_fiat_02,
+        p.metodos_pago_02,
+        p.descripcion_02,
+        p.ubicacion_02
+      FROM tbl_04_transacciones t
+      LEFT JOIN tbl_00_usuarios c ON t.comprador_id_04 = c.id_00
+      LEFT JOIN tbl_00_usuarios v ON t.vendedor_id_04 = v.id_00
+      LEFT JOIN tbl_02_publicaciones p ON t.publicacion_id_04 = p.id_02
+      WHERE t.id_04 = $1`,
+      [id]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        error: 'Transacción no encontrada',
+        message: 'La transacción no existe'
+      })
+    }
+
+    const transaccion = result.rows[0]
+    const userId = req.user.id
+    if (transaccion.comprador_id_04 !== userId && transaccion.vendedor_id_04 !== userId) {
+      return res.status(403).json({
+        error: 'No autorizado',
+        message: 'No tienes permiso para ver esta transacción'
+      })
+    }
+
+    res.json({ transaccion: transaccion })
+  } catch (error) {
+    console.error('Error en getTransaccion:', error)
+    res.status(500).json({
+      error: 'Error al obtener transacción',
+      message: 'Error interno del servidor'
+    })
+  }
+}
+
+/**
  * Controlador para actualizar el estado de una transacción
  */
 export const updateEstadoTransaccion = async (req, res) => {
